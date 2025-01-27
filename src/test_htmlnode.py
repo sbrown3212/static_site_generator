@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 
 class TestHTMLNode(unittest.TestCase):
@@ -47,6 +47,60 @@ class TestHTMLNode(unittest.TestCase):
             result == ' class="greeting" id="hello"' or 
             result == ' id="hello" class="greeting"'
         )
+    
+    def test_no_tag(self):
+        node = LeafNode(None, "This is a leaf node with no tag")
+        self.assertEqual(node.to_html(), "This is a leaf node with no tag")
+    
+    # Parent Node tests
+    def test_multiple_children(self):
+        node = ParentNode(
+            "p",
+            [
+                LeafNode("b", "Bold text"),
+                LeafNode(None, "Normal text"),
+                LeafNode("i", "italic text"),
+                LeafNode(None, "Normal text"),
+            ],
+        )
+        self.assertEqual(
+            node.to_html(),
+            '<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>'
+        )
+    
+    def test_nested_parent(self):
+        node = ParentNode(
+            "div",
+            [
+                ParentNode(
+                    "p",
+                    [
+                        LeafNode(None, "Normal text")
+                    ]
+                )
+            ]
+        )
+        self.assertEqual(
+            node.to_html(),
+            "<div><p>Normal text</p></div>"
+        )
+    
+    def test_no_children(self):
+        with self.assertRaises(ValueError):
+            node = ParentNode("div", None)
+            node.to_html()
+    
+    def test_single_child(self):
+        node = ParentNode(
+            "div",
+            [
+                ParentNode(
+                    "p",
+                    [LeafNode("b", "Bold text")]
+                )
+            ]
+        )
+        self.assertEqual(node.to_html(), "<div><p><b>Bold text</b></p></div>")
 
 
 if __name__ == "__main__":
