@@ -1,10 +1,11 @@
 import unittest
 
-from inline_markdown import split_nodes_delimiter
+from inline_markdown import split_nodes_delimiter, extract_markdown_images, extract_markdown_links
 from textnode import TextNode, TextType
 
 
 class TextSplitNodesDelimiter(unittest.TestCase):
+    # Split nodes delimiter
     def test_node_split_bold(self):
         old_nodes = [
             TextNode("This is a **bold** word", TextType.TEXT)
@@ -84,7 +85,65 @@ class TextSplitNodesDelimiter(unittest.TestCase):
             TextNode("italicized", TextType.ITALIC),
             TextNode(" word.", TextType.TEXT)
         ]
-        print("")
-        print("  actual: ", result)
-        print("expected: ", expected)
         self.assertEqual(result, expected)
+
+    # Extract markdown images
+    def test_extract_markdown_images_multiple(self):
+        text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        result = extract_markdown_images(text)
+        self.assertEqual(
+            result,
+            [
+                ("rick roll", "https://i.imgur.com/aKaOqIh.gif"), 
+                ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")
+            ]
+        )
+
+    def test_extract_markdown_images_single(self):
+        text = "This is text with only a ![rick roll](https://i.imgur.com/aKaOqIh.gif)"
+        result = extract_markdown_images(text)
+        self.assertEqual(
+            result,
+            [("rick roll", "https://i.imgur.com/aKaOqIh.gif")]
+        )
+    
+    def test_extract_markdown_images_none(self):
+        text = "This is text without an image in markdown syntax"
+        result = extract_markdown_images(text)
+        self.assertEqual(result, [])
+    
+    def test_extract_markdown_images_w_mixed(self):
+        text = "This is text with a [rick roll](https://i.imgur.com/aKaOqIh.gif) link and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg) image"
+        result = extract_markdown_images(text)
+        self.assertEqual(result, [("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")])
+
+    # Extract markdown links
+    def test_extract_markdown_links_multiple(self):
+        text = "This is text with a [rick roll](https://i.imgur.com/aKaOqIh.gif) and [obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        result = extract_markdown_links(text)
+        # print("result: ", result)
+        self.assertEqual(
+            result,
+            [
+                ("rick roll", "https://i.imgur.com/aKaOqIh.gif"), 
+                ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")
+            ]
+        )
+
+    def test_extract_markdown_links_single(self):
+        text = "This is text with only a [rick roll](https://i.imgur.com/aKaOqIh.gif)"
+        result = extract_markdown_links(text)
+        self.assertEqual(
+            result,
+            [("rick roll", "https://i.imgur.com/aKaOqIh.gif")]
+        )
+    
+    def test_extract_markdown_links_none(self):
+        text = "This is text without a link in markdown syntax"
+        result = extract_markdown_links(text)
+        self.assertEqual(result, [])
+
+    def test_extract_markdown_links_mixed(self):
+        text = "This is text with a [rick roll](https://i.imgur.com/aKaOqIh.gif) link and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg) image"
+        result = extract_markdown_links(text)
+        self.assertEqual(result, [("rick roll", "https://i.imgur.com/aKaOqIh.gif")])
