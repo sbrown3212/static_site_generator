@@ -1,6 +1,6 @@
 import unittest
 
-from inline_markdown import split_nodes_delimiter, extract_markdown_images, extract_markdown_links
+from inline_markdown import split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link
 from textnode import TextNode, TextType
 
 
@@ -147,3 +147,143 @@ class TextSplitNodesDelimiter(unittest.TestCase):
         text = "This is text with a [rick roll](https://i.imgur.com/aKaOqIh.gif) link and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg) image"
         result = extract_markdown_links(text)
         self.assertEqual(result, [("rick roll", "https://i.imgur.com/aKaOqIh.gif")])
+    
+    # Split nodes image
+    def test_split_nodes_image_single(self):
+        node = TextNode(
+            "This is text with only a ![rick roll](https://i.imgur.com/aKaOqIh.gif)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_image([node])
+        expected = [
+                TextNode("This is text with only a ", TextType.TEXT),
+                TextNode("rick roll", TextType.IMAGE, "https://i.imgur.com/aKaOqIh.gif"),
+            ]
+
+        self.assertEqual(expected, new_nodes)
+    
+    def test_split_nodes_image_single2(self):
+        node = TextNode(
+            "This is text with only a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and some text afterward",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_image([node])
+        expected = [
+                TextNode("This is text with only a ", TextType.TEXT),
+                TextNode("rick roll", TextType.IMAGE, "https://i.imgur.com/aKaOqIh.gif"),
+                TextNode(" and some text afterward", TextType.TEXT),
+            ]
+
+        self.assertEqual(expected, new_nodes)
+    
+    def test_split_nodes_image_repeat_image(self):
+        node = TextNode(
+            "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif), and another ![rick roll](https://i.imgur.com/aKaOqIh.gif)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_image([node])
+        expected = [
+                TextNode("This is text with a ", TextType.TEXT),
+                TextNode("rick roll", TextType.IMAGE, "https://i.imgur.com/aKaOqIh.gif"),
+                TextNode(", and another ", TextType.TEXT),
+                TextNode("rick roll", TextType.IMAGE, "https://i.imgur.com/aKaOqIh.gif"),
+            ]
+
+        self.assertEqual(expected, new_nodes)
+
+    def test_split_nodes_image_no_image(self):
+        node = TextNode(
+            "This is only text without any images",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_image([node])
+        expected = [
+                TextNode("This is only text without any images", TextType.TEXT),
+            ]
+
+        self.assertEqual(expected, new_nodes)
+
+    def test_split_nodes_image_mixed(self):
+        node = TextNode(
+            "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif), and a link [to boot dev](https://boot.dev)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_image([node])
+        expected = [
+                TextNode("This is text with a ", TextType.TEXT),
+                TextNode("rick roll", TextType.IMAGE, "https://i.imgur.com/aKaOqIh.gif"),
+                TextNode(", and a link [to boot dev](https://boot.dev)", TextType.TEXT),
+            ]
+        self.assertEqual(expected, new_nodes)
+    
+    #Split Nodes link
+    def test_split_nodes_link(self):
+        node = TextNode(
+            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        self.assertEqual(
+            [
+                TextNode("This is text with a link ", TextType.TEXT),
+                TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+                TextNode(" and ", TextType.TEXT),
+                TextNode(
+                    "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
+                ),
+            ],
+            new_nodes
+        )
+
+    def test_split_nodes_link_repeat_link(self):
+        node = TextNode(
+            "This is a [link to boot dev](https://boot.dev), and another [link to boot dev](https://boot.dev)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        expected = [
+                TextNode("This is a ", TextType.TEXT),
+                TextNode("link to boot dev", TextType.LINK, "https://boot.dev"),
+                TextNode(", and another ", TextType.TEXT),
+                TextNode("link to boot dev", TextType.LINK, "https://boot.dev"),
+            ]
+
+        self.assertEqual(expected, new_nodes)
+    
+    def test_split_nodes_image_no_link(self):
+        node = TextNode(
+            "This is only text without any links",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        expected = [
+                TextNode("This is only text without any links", TextType.TEXT),
+            ]
+
+        self.assertEqual(expected, new_nodes)
+
+    def test_split_nodes_link_mixed(self):
+        node = TextNode(
+            "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif), and a link [to boot dev](https://boot.dev)",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        expected = [
+                TextNode("This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif), and a link ", TextType.TEXT),
+                TextNode("to boot dev", TextType.LINK, "https://boot.dev"),
+            ]
+        self.assertEqual(expected, new_nodes)
+    
+    def test_split_nodes_link_single(self):
+        node = TextNode(
+            "This is a link to [boot dev](https://boot.dev) and some text afterward",
+            TextType.TEXT,
+        )
+        new_nodes = split_nodes_link([node])
+        expected = [
+                TextNode("This is a link to ", TextType.TEXT),
+                TextNode("boot dev", TextType.LINK, "https://boot.dev"),
+                TextNode(" and some text afterward", TextType.TEXT),
+            ]
+
+        self.assertEqual(expected, new_nodes)

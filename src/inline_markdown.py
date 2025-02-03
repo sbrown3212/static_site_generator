@@ -76,3 +76,83 @@ def extract_markdown_links(text):
     #     link_tuples.append((anchor_text, url))
     
     # return link_tuples
+
+
+def split_nodes_image(old_nodes):
+    new_nodes = []
+
+    for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            new_nodes.append(node)
+            continue
+
+        results = extract_markdown_images(node.text)
+
+        if len(results) == 0:
+            new_nodes.append(node)
+            continue
+
+        remaining_text = node.text
+
+        for image in results:
+            alt_img = image[0]
+            img_url = image[1]
+            delimiiter = f"![{alt_img}]({img_url})"
+
+            split_text = remaining_text.split(delimiiter, 1)
+
+            new_node_text = split_text[0]
+            remaining_text = split_text[1]
+
+            if new_node_text != "":
+                text_node = TextNode(new_node_text, TextType.TEXT)
+                new_nodes.append(text_node)
+
+            image_node = TextNode(alt_img, TextType.IMAGE, img_url)
+            new_nodes.append(image_node)
+
+        if remaining_text != "":
+            remaining_node = TextNode(remaining_text, TextType.TEXT)
+            new_nodes.append(remaining_node)
+    
+    return new_nodes
+
+
+def split_nodes_link(old_nodes):
+    new_nodes = []
+
+    for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            new_nodes.append(node)
+            continue
+
+        results = extract_markdown_links(node.text)
+
+        if len(results) == 0:
+            new_nodes.append(node)
+            continue
+
+        remaining_text = node.text
+
+        for link in results:
+            anchor_text = link[0]
+            link_url = link[1]
+            delimiter = f"[{anchor_text}]({link_url})"
+
+            split_text = remaining_text.split(delimiter, 1)
+
+            new_node_text = split_text[0]
+            remaining_text = split_text[1]
+
+            if new_node_text != "":
+                text_node = TextNode(new_node_text, TextType.TEXT)
+                new_nodes.append(text_node)
+
+            link_node = TextNode(anchor_text, TextType.LINK, link_url)
+            new_nodes.append(link_node)
+        
+        if remaining_text != "":
+            remaining_node = TextNode(remaining_text, TextType.TEXT)
+            new_nodes.append(remaining_node)
+    
+    return new_nodes
