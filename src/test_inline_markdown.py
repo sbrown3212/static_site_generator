@@ -4,7 +4,7 @@ from inline_markdown import split_nodes_delimiter, extract_markdown_images, extr
 from textnode import TextNode, TextType
 
 
-class TextSplitNodesDelimiter(unittest.TestCase):
+class TestInlineMarkdown(unittest.TestCase):
     # Split nodes delimiter
     def test_node_split_bold(self):
         old_nodes = [
@@ -306,3 +306,6 @@ class TextSplitNodesDelimiter(unittest.TestCase):
             TextNode("link", TextType.LINK, "https://boot.dev"),
         ]
         self.assertEqual(actual, expected)
+
+if __name__ == "__main__":
+    unittest.main()
