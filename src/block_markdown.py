@@ -1,5 +1,15 @@
 
 def markdown_to_blocks(markdown): 
+    # # Solution from boot.dev
+    # blocks = markdown.split("\n\n")
+    # filtered_blocks = []
+    # for block in blocks:
+    #     if block == "":
+    #         continue
+    #     block = block.strip()
+    #     filtered_blocks.append(block)
+    # return filtered_blocks
+
     parts = markdown.split("\n")
 
     block_list = []
