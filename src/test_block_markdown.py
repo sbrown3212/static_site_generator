@@ -1,6 +1,15 @@
 import unittest
 
-from block_markdown import markdown_to_blocks, BlockType, block_to_block_type
+from block_markdown import (
+    markdown_to_blocks,
+    block_to_block_type,
+    block_type_paragraph,
+    block_type_heading,
+    block_type_code,
+    block_type_quote,
+    block_type_ulist,
+    block_type_olist
+)
 
 
 class TestBlockMarkdown(unittest.TestCase):
@@ -43,79 +52,79 @@ class TestBlockMarkdown(unittest.TestCase):
     def test_block_to_block_type_heading(self):
         block = "# This is a heading"
         result = block_to_block_type(block)
-        expected = BlockType.HEADING
+        expected = block_type_heading
         self.assertEqual(result, expected)
     
     def test_block_to_block_type_heading2(self):
         block = "### This is a heading"
         result = block_to_block_type(block)
-        expected = BlockType.HEADING
+        expected = block_type_heading
         self.assertEqual(result, expected)
     
     def test_block_to_block_type_heading3(self):
         block = "####### This is not a heading"
         result = block_to_block_type(block)
-        expected = BlockType.PARAGRAPH
+        expected = block_type_paragraph
         self.assertEqual(result, expected)
     
     def test_block_to_block_type_heading4(self):
         block = "#This is not a heading"
         result = block_to_block_type(block)
-        expected = BlockType.PARAGRAPH
+        expected = block_type_paragraph
         self.assertEqual(result, expected)
 
     def test_block_to_block_type_code(self):
         block = "```This is a code block```"
         result = block_to_block_type(block)
-        expected = BlockType.CODE
+        expected = block_type_code
         self.assertEqual(result, expected)
     
     def test_block_to_block_type_code2(self):
         block = "```This is a code block\nwith multiple\nlines```"
         result = block_to_block_type(block)
-        expected = BlockType.CODE
+        expected = block_type_code
         self.assertEqual(result, expected)
 
     def test_block_to_block_type_quote(self):
         block = "> This is a quote block"
         result = block_to_block_type(block)
-        expected = BlockType.QUOTE
+        expected = block_type_quote
         self.assertEqual(result, expected)
     
     def test_block_to_block_type_quote2(self):
         block = "> This is a quote block\n> with multiple\n> lines"
         result = block_to_block_type(block)
-        expected = BlockType.QUOTE
+        expected = block_type_quote
         self.assertEqual(result, expected)
     
     def test_block_to_block_type_unordered(self):
         block = "* here\n* is\n* a\n* list\n* of\n* words"
         result = block_to_block_type(block)
-        expected = BlockType.UNORDERED_LIST
+        expected = block_type_ulist
         self.assertEqual(result, expected)
     
     def test_block_to_block_type_unordered2(self):
         block = "* here\n- is\n* a\n* list\n- of\n* words"
         result = block_to_block_type(block)
-        expected = BlockType.UNORDERED_LIST
+        expected = block_type_ulist
         self.assertEqual(result, expected)
 
     def test_block_to_block_type_ordered(self):
         block = "1. one\n2. two\n3. three\n4. four\n5. five\n6. six\n7. seven\n8. eight\n9. nine\n10. ten"
         result = block_to_block_type(block)
-        expected = BlockType.ORDERED_LIST
+        expected = block_type_olist
         self.assertEqual(result, expected)
     
     def test_block_to_block_type_paragraph(self):
         block = "this is a paragraph"
         result = block_to_block_type(block)
-        expected = BlockType.PARAGRAPH
+        expected = block_type_paragraph
         self.assertEqual(result, expected)
     
     def test_block_to_block_type_paragraph2(self):
         block = "1. one\n3. not two\n3. three"
         result = block_to_block_type(block)
-        expected = BlockType.PARAGRAPH
+        expected = block_type_paragraph
         self.assertEqual(result, expected)
 
 if __name__ == "__main__":
