@@ -13,7 +13,11 @@ def text_to_children(text) :
 
 
 def paragraph_block_to_html_node(block):
-    children = text_to_children(block)
+    # Remove all line braking spaces
+    lines = block.split("\n")
+    paragraph = " ".join(lines)
+
+    children = text_to_children(paragraph)
 
     paragraph_node = ParentNode("p", children)
 
@@ -60,6 +64,30 @@ def quote_block_to_html_node(block):
 
     return quote_block_node
 
+def unordered_list_block_to_html_node(block):
+    lines = block.split("\n")
+
+    list_item_nodes = list(map(
+        lambda line: ParentNode("li", text_to_children(line[2:])),
+        lines
+    ))
+
+    ulist_block_node = ParentNode("ul", list_item_nodes)
+
+    return ulist_block_node
+
+def ordered_list_block_to_html_node(block):
+    lines = block.split("\n")
+
+    list_item_nodes = list(map(
+        lambda line: ParentNode("li", text_to_children(line[3:])),
+        lines
+    ))
+
+    olist_block_node = ParentNode("ol", list_item_nodes)
+
+    return olist_block_node
+
 
 def markdown_to_html_nodes(markdown):
     blocks = markdown_to_blocks(markdown)
@@ -91,10 +119,14 @@ def markdown_to_html_nodes(markdown):
                 continue
 
             case "unordered_list":
-                pass
+                ulist_block_node = unordered_list_block_to_html_node(block)
+                html_nodes.append(ulist_block_node)
+                continue
 
             case "ordered_list":
-                pass
+                olist_block_node = ordered_list_block_to_html_node(block)
+                html_nodes.append(olist_block_node)
+                continue
 
             case _:
                 raise Exception("Invalid block type")
