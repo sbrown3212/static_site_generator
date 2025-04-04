@@ -4,8 +4,6 @@ from generate_page import generate_page
 import os
 import shutil
 
-# source_dir = r"./static"
-# dest_dir = r"./public"
 
 STATIC_PATH = r"./static"
 PUBLIC_PATH = r"./public"
@@ -14,17 +12,22 @@ DEST_PATH = r"./public/index.html"
 TEMPLATE_PATH = r"./template.html"
 
 def delete_dir_contents(path):
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Path '{path}' does not exist.")
+    
+    if not os.path.isdir(path):
+        raise ValueError(f"Path '{path}' is not a directory.")
+    
     contents = os.listdir(path)
     for item in contents:
         item_path = os.path.join(path, item)
         if os.path.isfile(item_path):
-            removed_path = os.remove(item_path)
-            print('File deleted at: ', removed_path)
+            os.remove(item_path)
         else:
-            removed_dir = shutil.rmtree(item_path)
-            print('Directory tree removed at: ', removed_dir)
+            shutil.rmtree(item_path)
 
 
+# Recursive function to copy contents w/o using 'shutil.copytree'
 def copy_contents_recursive(source_dir, dest_dir):
     # Ensure dest_dir exists
     if not os.path.exists(dest_dir):
@@ -36,53 +39,28 @@ def copy_contents_recursive(source_dir, dest_dir):
 
         if os.path.isfile(source_path):
             shutil.copy(source_path, dest_path)
-            print(f"   Copied {source_path} to {dest_path}")
         else:
             copy_contents_recursive(source_path, dest_path)
 
 
-# Write a *recursive* function that copies all the contents
-# from a 'static' directory to a 'public' directory
-# (without using 'shutil.copytree')
+
 def copy_dir(source_dir, dest_dir):
-    # Ensure path arguments exist
-    if os.path.exists(source_dir):
-        source_path = os.path.join(source_dir)
-        print("source path: ", source_path)
-    else:
-        raise ValueError("Source path does not exist.")
-    
-    if os.path.exists(dest_dir):
-        dest_path = os.path.join(dest_dir)
-        print("destination path: ", dest_path)
-    else:
-        raise ValueError("Destination path does not exist.")
-    
-    print("-----")
+    if not os.path.exists(source_dir):
+        raise ValueError(f"Source path '{source_dir}' does not exist.")
 
-    # Delete destination dir contents
-    try:
-        delete_dir_contents(dest_dir)
-        print('Destination directory contents deleted successfully.')
-    except:
-        raise Exception('Failed to delete destination directory.')
+    os.makedirs(dest_dir, exist_ok=True)
+    delete_dir_contents(dest_dir) #clean dest_dir before copying
     
-    print("-----")
-
     try:
-        copy_contents_recursive(source_path, dest_path)
-        print("Successfully copied contents")
+        copy_contents_recursive(source_dir, dest_dir)
     except:
         raise Exception("Failed to copy contents")
     
 
 def main():
-    # copy_dir(source_dir, dest_dir)
     copy_dir(STATIC_PATH, PUBLIC_PATH)
 
     generate_page(CONTENT_PATH, DEST_PATH, TEMPLATE_PATH)
-
-    return
 
 
 if __name__ == "__main__":
