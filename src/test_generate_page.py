@@ -1,9 +1,10 @@
 import unittest
 
-from extract_title import extract_title
+from generate_page import extract_title
 
 
-class TestExtractTitle(unittest.TestCase):
+class TestGeneratePage(unittest.TestCase):
+    # Extract title function
     def test_extract_title(self):
         markdown = "# Hello"
 
@@ -24,6 +25,9 @@ class TestExtractTitle(unittest.TestCase):
 
         with self.assertRaises(Exception):
             extract_title(markdown)
+    
+
+    # Generate page function
 
 
 if __name__ == "__main__":
