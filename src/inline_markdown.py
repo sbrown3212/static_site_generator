@@ -97,9 +97,9 @@ def split_nodes_image(old_nodes):
         for image in results:
             alt_img = image[0]
             img_url = image[1]
-            delimiiter = f"![{alt_img}]({img_url})"
+            delimiter = f"![{alt_img}]({img_url})"
 
-            split_text = remaining_text.split(delimiiter, 1)
+            split_text = remaining_text.split(delimiter, 1)
 
             new_node_text = split_text[0]
             remaining_text = split_text[1]
