@@ -52,23 +52,71 @@ def code_block_to_html_node(block):
 def quote_block_to_html_node(block):
     lines = block.split("\n")
 
-    # Map over lines, using line text (skipping first character)
-    # as input in `text_to_children` function,
-    # and put that(those) node(s) as children in a parent "p" block node
-    children = list(map(
-        lambda line: ParentNode("p", text_to_children(line[1:])),
-        lines
-    ))
+    # ------
 
-    quote_block_node = ParentNode("blockquote", children)
+    # This solution passes the test from boot.dev by combining quote text into
+    # one block and wraps it in a '<blockquote>' instead of wrapping the 
+    # collection of '<p>' tags within a '<blockquote>'
+    
+    sanitized_lines = []
+
+    for line in lines:
+        if not line.strip():
+            continue
+        sanitized_lines.append(line[1:].strip())
+
+    print("sanitized lines: ", sanitized_lines)
+    quote = " ".join(sanitized_lines)
+    print("quote: ", f"'{quote}'")
+
+    # quote_node = LeafNode(None, quote)
+
+    # quote_block_node = ParentNode("blockquote", [quote_node])
+
+    quote_block_node = LeafNode("blockquote", quote)
+
+    #  -------
+
+    # This was the original solution, but does not pass because
+    # test expects no '<p>' tag between '<blockquote>' tag and quote text
+
+    # # Map over lines, using line text (skipping first character)
+    # # as input in `text_to_children` function,
+    # # and put that(those) node(s) as children in a parent "p" block node
+    # def process_line(line):
+    #     # if line[1:].strip():
+    #     #     return line[1:].strip()
+    #     # return None
+    #     if line == ">":
+    #         return None
+    #     return line[1:].strip()
+    
+    # processed_lines = list(map(process_line, lines))
+
+    # filtered_lines = []
+
+    # for line in processed_lines:
+    #     if line is not None:
+    #         filtered_lines.append(line)
+
+    # children = list(map(
+    #     lambda line: ParentNode("p", text_to_children(line[1:])),
+    #     # processed_lines
+    #     filtered_lines
+    # ))
+
+    # quote_block_node = ParentNode("blockquote", children)
+
+    # -------
 
     return quote_block_node
+
 
 def unordered_list_block_to_html_node(block):
     lines = block.split("\n")
 
     list_item_nodes = list(map(
-        lambda line: ParentNode("li", text_to_children(line[2:])),
+        lambda line: ParentNode("li", text_to_children(line[2:].strip())),
         lines
     ))
 
@@ -80,7 +128,7 @@ def ordered_list_block_to_html_node(block):
     lines = block.split("\n")
 
     list_item_nodes = list(map(
-        lambda line: ParentNode("li", text_to_children(line[3:])),
+        lambda line: ParentNode("li", text_to_children(line[3:].strip())),
         lines
     ))
 
