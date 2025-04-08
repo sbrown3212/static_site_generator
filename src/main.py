@@ -1,5 +1,5 @@
 from textnode import *
-from generate_page import generate_page
+from generate_page import generate_all_pages
 
 import os
 import shutil
@@ -7,8 +7,7 @@ import shutil
 
 STATIC_PATH = r"./static"
 PUBLIC_PATH = r"./public"
-CONTENT_PATH = r"./content/index.md"
-DEST_PATH = r"./public/index.html"
+CONTENT_PATH = r"./content"
 TEMPLATE_PATH = r"./template.html"
 
 def delete_dir_contents(path):
@@ -60,7 +59,7 @@ def copy_dir(source_dir, dest_dir):
 def main():
     copy_dir(STATIC_PATH, PUBLIC_PATH)
 
-    generate_page(CONTENT_PATH, DEST_PATH, TEMPLATE_PATH)
+    generate_all_pages(CONTENT_PATH, TEMPLATE_PATH, PUBLIC_PATH)
 
 
 if __name__ == "__main__":
