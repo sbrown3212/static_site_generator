@@ -50,6 +50,7 @@ def code_block_to_html_node(block):
 
 
 def quote_block_to_html_node(block):
+    # split block by line breaks
     lines = block.split("\n")
 
     # ------
@@ -58,6 +59,7 @@ def quote_block_to_html_node(block):
     # one block and wraps it in a '<blockquote>' instead of wrapping the 
     # collection of '<p>' tags within a '<blockquote>'
     
+    # Remove '>' characters and white space from each line
     sanitized_lines = []
 
     for line in lines:
@@ -65,14 +67,10 @@ def quote_block_to_html_node(block):
             continue
         sanitized_lines.append(line[1:].strip())
 
-    print("sanitized lines: ", sanitized_lines)
+    # Join lines into one block
     quote = " ".join(sanitized_lines)
-    print("quote: ", f"'{quote}'")
 
-    # quote_node = LeafNode(None, quote)
-
-    # quote_block_node = ParentNode("blockquote", [quote_node])
-
+    # Create quote block node
     quote_block_node = LeafNode("blockquote", quote)
 
     #  -------
