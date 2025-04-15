@@ -3,6 +3,13 @@ from generate_page import generate_all_pages
 
 import os
 import shutil
+import sys
+
+
+try:
+    BASEPATH = sys.argv[1]
+except:
+    BASEPATH = "/"
 
 
 STATIC_PATH = r"./static"
@@ -59,7 +66,7 @@ def copy_dir(source_dir, dest_dir):
 def main():
     copy_dir(STATIC_PATH, PUBLIC_PATH)
 
-    generate_all_pages(CONTENT_PATH, TEMPLATE_PATH, PUBLIC_PATH)
+    generate_all_pages(CONTENT_PATH, TEMPLATE_PATH, PUBLIC_PATH, BASEPATH)
 
 
 if __name__ == "__main__":

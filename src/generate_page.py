@@ -16,7 +16,7 @@ def extract_title(markdown):
     return title
 
 
-def generate_pages_recursive(content_dir_path, template_contents, dest_dir_path):
+def generate_pages_recursive(content_dir_path, template_contents, dest_dir_path, basepath):
     # Get contents of content directory
     if os.path.exists(content_dir_path):
         contents = os.listdir(content_dir_path)
@@ -34,7 +34,7 @@ def generate_pages_recursive(content_dir_path, template_contents, dest_dir_path)
             # If item is a directory, ensure 'dest_item_path' exists
             # and recursively call function again
             os.makedirs(dest_item_path, exist_ok=True)
-            generate_pages_recursive(content_item_path, template_contents, dest_item_path)
+            generate_pages_recursive(content_item_path, template_contents, dest_item_path, basepath)
         
         elif item.endswith('.md'): # only generate html if item is markdown file
             # Open and read markdown file
@@ -49,7 +49,7 @@ def generate_pages_recursive(content_dir_path, template_contents, dest_dir_path)
             content = html_nodes.to_html()
 
             # update template with title and content
-            html_page = template_contents.replace("{{ Title }}", title).replace("{{ Content }}", content)
+            html_page = template_contents.replace("{{ Title }}", title).replace("{{ Content }}", content).replace('href="/', f'href="{basepath}').replace('src="/', f'src="{basepath}')
 
             # Update destination path to have .html extension rather than .md
             dest_item_path = dest_item_path.replace(".md", ".html")
@@ -61,7 +61,7 @@ def generate_pages_recursive(content_dir_path, template_contents, dest_dir_path)
                 file.write(html_page)
             
 
-def generate_all_pages(content_dir_path, template_path, dest_dir_path):
+def generate_all_pages(content_dir_path, template_path, dest_dir_path, basepath):
     # Open and read template file
     try:
         with open(template_path, "r") as file:
@@ -69,4 +69,4 @@ def generate_all_pages(content_dir_path, template_path, dest_dir_path):
     except:
         raise Exception(f"Failed to read contents of '{template_path}' path")
 
-    generate_pages_recursive(content_dir_path, template_content, dest_dir_path)
+    generate_pages_recursive(content_dir_path, template_content, dest_dir_path, basepath)
