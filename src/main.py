@@ -13,7 +13,8 @@ except:
 
 
 STATIC_PATH = r"./static"
-PUBLIC_PATH = r"./public"
+# PUBLIC_PATH = r"./public" # replaced by 'DOCS_PATH' to use with GitHub
+DOCS_PATH = r"./docs"
 CONTENT_PATH = r"./content"
 TEMPLATE_PATH = r"./template.html"
 
@@ -64,9 +65,9 @@ def copy_dir(source_dir, dest_dir):
     
 
 def main():
-    copy_dir(STATIC_PATH, PUBLIC_PATH)
+    copy_dir(STATIC_PATH, DOCS_PATH)
 
-    generate_all_pages(CONTENT_PATH, TEMPLATE_PATH, PUBLIC_PATH, BASEPATH)
+    generate_all_pages(CONTENT_PATH, TEMPLATE_PATH, DOCS_PATH, BASEPATH)
 
 
 if __name__ == "__main__":
